@@ -1,4 +1,5 @@
 
+import axios from "axios"
 import React from "react"
 import SingleTodo from "./SingleTodo"
 
@@ -8,40 +9,50 @@ class TodoList extends React.Component {
     user: [
 
     ],
-    currentTittle: "",
-    count: 0
+    currentTitle: "",
 
   }
+
+  newstate = { ...this.state }
+
+  componentDidMount() {
+    axios.get("http://localhost:4000/todos").then((res) => {
+      this.state.user = [...res.data]
+      this.setState(this.state)
+    })
+
+  }
+
 
   getData() {
     return this.state.user.map((singleTodo, i) => {
-      return <SingleTodo key={i} tittle={singleTodo.tittle} />
-
+      return <SingleTodo id={singleTodo.id} title={singleTodo.title} />
     })
   }
   changeData = (event) => {
-    this.state.currentTittle = event.target.value
-    this.setState(this.state)
+    this.newstate.currentTitle = event.target.value
+    this.setState(this.newstate)
   }
   onSubmit = () => {
+
     let newUser = {
-      tittle: this.state.currentTittle
+      title: this.state.currentTitle // cozz state is update by changedata function we can also use newstate title.
     }
-    if (this.state.currentTittle == "") {
-      newUser.tittle = undefined
-    }
-    else {
-      this.state.count = this.state.count + 1
-      this.state.user.push(newUser)
-      this.state.currentTittle = ""
-      this.setState(this.state)
+    if (this.state.currentTitle !== "") {
+      axios.post("http://localhost:4000/todos", newUser).then((res) => {
+        console.log(res.data)
+        this.newstate.user.push(res.data)
+        this.newstate.currentTitle = ""
+        this.setState(this.newstate)
+      })
+
     }
   }
 
   render() {
     let count;
-    if (this.state.count > 0) {
-      count = <p>You have {this.state.count} pending value</p>
+    if (this.state.user.length > 0) {
+      count = <p>You have {this.state.user.length} pending value</p>
     }
     return (
       <div className="container mt-4">
@@ -50,7 +61,7 @@ class TodoList extends React.Component {
           <div className="col jumbotron">
             <h1>Todo App</h1>
             <input placeholder="Add your new todo"
-              value={this.state.currentTittle}
+              value={this.state.currentTitle}
               onChange={this.changeData} style={{ width: "250px" }} />
             <button type="button" class="btn btn-sm ml-3" onClick={this.onSubmit}>
               <img src="plus.jpg" height="40" width="40" />
