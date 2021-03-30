@@ -10,40 +10,59 @@ class TodoList extends React.Component {
 
     ],
     currentTitle: "",
+    complete: false
 
   }
 
-  newstate = { ...this.state }
+
 
   componentDidMount() {
     axios.get("http://localhost:4000/todos").then((res) => {
-      this.state.user = [...res.data]
-      this.setState(this.state)
+      this.setState({
+        user: res.data
+      })
     })
 
+  }
+
+  callback = (callbackData) => {
+
+    axios.delete("http://localhost:4000/todos/" + callbackData).then((res) => {
+      console.log(res.data)
+      this.state.user.splice(callbackData, 1)
+    })
+    this.setState(this.state)
   }
 
 
   getData() {
-    return this.state.user.map((singleTodo, i) => {
-      return <SingleTodo id={singleTodo.id} title={singleTodo.title} />
+    return this.state.user.map((singleTodo) => {
+      return <SingleTodo key={singleTodo.id} id={singleTodo.id} title={singleTodo.title} handler={this.callback} />
     })
   }
-  changeData = (event) => {
-    this.newstate.currentTitle = event.target.value
-    this.setState(this.newstate)
+  changeData(event) {
+    //let newstate = { ...this.state }
+    //newstate.currentTitle = event.target.value
+    this.setState({
+      currentTitle: event.target.value
+    })
   }
   onSubmit = () => {
-
-    let newUser = {
-      title: this.state.currentTitle // cozz state is update by changedata function we can also use newstate title.
+    let newUser = [...this.state.user]
+    //console.log(newUser)
+    let newstate = {
+      title: this.state.currentTitle, // cozz state user has title property so for replace 
+      complete: false                //title in newstate we use title.property name should be same
     }
+
     if (this.state.currentTitle !== "") {
-      axios.post("http://localhost:4000/todos", newUser).then((res) => {
+      axios.post("http://localhost:4000/todos", newstate).then((res) => {
         console.log(res.data)
-        this.newstate.user.push(res.data)
-        this.newstate.currentTitle = ""
-        this.setState(this.newstate)
+        newUser.push(res.data)
+        this.setState({
+          user: newUser,
+          currentTitle: ""
+        })
       })
 
     }
@@ -62,7 +81,7 @@ class TodoList extends React.Component {
             <h1>Todo App</h1>
             <input placeholder="Add your new todo"
               value={this.state.currentTitle}
-              onChange={this.changeData} style={{ width: "250px" }} />
+              onChange={this.changeData.bind(this)} style={{ width: "250px" }} />
             <button type="button" class="btn btn-sm ml-3" onClick={this.onSubmit}>
               <img src="plus.jpg" height="40" width="40" />
             </button>
