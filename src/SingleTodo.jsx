@@ -4,10 +4,10 @@ import React from "react"
 export default class SingleTodo extends React.Component {
 
 
-    deleteData(deletedItem, Deleteindex) {
+    deleteData(deletedItem) {
 
         //console.log(deletedItem, Deleteindex)
-        this.props.handler(deletedItem, Deleteindex)
+        this.props.handler(deletedItem)
 
     }
 
@@ -21,7 +21,7 @@ export default class SingleTodo extends React.Component {
                     <input type="checkbox" class="form-check-input mt-2" value="" />
                     {this.props.title}
                     <button type="button" class="btn btn-sm ml-1 " onClick={
-                        this.deleteData.bind(this, this.props.id, this.props.index)
+                        this.deleteData.bind(this, this.props.id)
                     }>
                         <img src="delete.png" height="15" width="15" />
                     </button>

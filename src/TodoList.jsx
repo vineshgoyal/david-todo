@@ -25,16 +25,16 @@ class TodoList extends React.Component {
 
   }
 
-  callback = (callbackData, DeletedItem) => {
+  callback = (callbackData) => {
     let indexData = null;
     BaseApi.delete("todos/" + callbackData).then((res) => {
       //console.log(res.data)
     })
     for (let i = 0; i < this.state.user.length; i++) {
       if (this.state.user[i].id == callbackData) {
-        indexData = DeletedItem;
-        console.log(DeletedItem)
-        this.state.user.splice(DeletedItem, 1)
+        indexData = i;
+        console.log(callbackData, indexData)
+        this.state.user.splice(indexData, 1)
       }
     }
     this.setState(this.state)
