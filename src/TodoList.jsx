@@ -27,6 +27,7 @@ class TodoList extends React.Component {
 
   callback = (callbackData) => {
     let indexData = null;
+    let newUser = [...this.state.user]
     BaseApi.delete("todos/" + callbackData).then((res) => {
       //console.log(res.data)
     })
@@ -34,10 +35,15 @@ class TodoList extends React.Component {
       if (this.state.user[i].id == callbackData) {
         indexData = i;
         console.log(callbackData, indexData)
-        this.state.user.splice(indexData, 1)
+        break;
       }
     }
-    this.setState(this.state)
+    newUser.splice(indexData, 1)
+    indexData = null
+    //console.log(newUser)
+    this.setState({
+      user: newUser
+    })
 
   }
 
