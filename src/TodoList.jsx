@@ -17,7 +17,7 @@ class TodoList extends React.Component {
 
 
   componentDidMount() {
-    BaseApi.get("todos/").then((res) => {
+    BaseApi.get("todos").then((res) => {
       this.setState({
         user: res.data
       })
@@ -26,12 +26,18 @@ class TodoList extends React.Component {
   }
 
   callback = (callbackData, DeletedItem) => {
-
+    let indexData = null;
     BaseApi.delete("todos/" + callbackData).then((res) => {
       //console.log(res.data)
-      this.state.user.splice(DeletedItem, 1)
-      this.setState(this.state)
     })
+    for (let i = 0; i < this.state.user.length; i++) {
+      if (this.state.user[i].id == callbackData) {
+        indexData = DeletedItem;
+        console.log(DeletedItem)
+        this.state.user.splice(DeletedItem, 1)
+      }
+    }
+    this.setState(this.state)
 
   }
 
@@ -57,8 +63,8 @@ class TodoList extends React.Component {
     }
 
     if (this.state.currentTitle !== "") {
-      BaseApi.post("todos/", newstate).then((res) => {
-        console.log(res.data)
+      BaseApi.post("todos", newstate).then((res) => {
+        // console.log(res.data)
         newUser.push(res.data)
         this.setState({
           user: newUser,
