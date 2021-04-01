@@ -38,12 +38,14 @@ class TodoList extends React.Component {
         break;
       }
     }
-    newUser.splice(indexData, 1)
-    indexData = null
-    //console.log(newUser)
-    this.setState({
-      user: newUser
-    })
+    if (indexData != null) {
+      newUser.splice(indexData, 1)
+      //console.log(newUser)
+      this.setState({
+        user: newUser
+      })
+    }
+
 
   }
 
