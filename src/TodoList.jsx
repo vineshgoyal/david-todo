@@ -2,7 +2,7 @@
 import React from "react"
 import SingleTodo from "./SingleTodo"
 import { BaseApi } from "./BaseUrl"
-
+import "./index.css";
 class TodoList extends React.Component {
 
   state = {
@@ -34,7 +34,7 @@ class TodoList extends React.Component {
     for (let i = 0; i < this.state.user.length; i++) {
       if (this.state.user[i].id == callbackData) {
         indexData = i;
-        console.log(callbackData, indexData)
+        // console.log(callbackData, indexData)
         break;
       }
     }
@@ -47,10 +47,31 @@ class TodoList extends React.Component {
 
   }
 
+  update(todo, callbackevent) {
+    let indexData = null;
+    let checked = callbackevent.target.checked;
+    let newUser = [...this.state.user]
+    console.log(todo.id)
+    BaseApi.patch("todos/" + todo.id, { complete: checked }).then((res) => {
+    })
+    for (let i = 0; i < this.state.user.length; i++) {
+      if (this.state.user[i].id == todo.id) {
+        indexData = i
+        break
+      }
+    }
+    newUser[indexData].complete = checked
+    this.setState({
+      user: newUser
+    })
+
+  }
+
 
   getData() {
     return this.state.user.map((singleTodo, i) => {
-      return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} title={singleTodo.title} handler={this.callback} />
+      return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} data={singleTodo}
+        title={singleTodo.title} handler={this.callback} onchangeHandler={this.update.bind(this)} />
     })
   }
   changeData(event) {
