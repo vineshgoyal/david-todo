@@ -35,7 +35,8 @@ export default class SingleTodo extends React.Component {
                             this.deleteData.bind(this, this.props.id)
                         }>
                             <img src="delete.png" height="15" width="15" />
-                        </button></h6>
+                        </button></h6> <br />
+
                 </h6>
             </>
 

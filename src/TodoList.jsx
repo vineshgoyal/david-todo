@@ -49,6 +49,7 @@ class TodoList extends React.Component {
 
   }
 
+
   update(todo, callbackevent) {
     let indexData = null;
     let checked = callbackevent.target.checked;
@@ -123,6 +124,7 @@ class TodoList extends React.Component {
             </button>
             {count}
             {this.getData()}
+            <button type="button" class="btn btn-sm ml-1 bg-primary" >Clear All</button>
           </div>
           <div className="col"></div>
         </div>
