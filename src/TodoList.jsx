@@ -1,7 +1,7 @@
 
-import axios from "axios"
 import React from "react"
 import SingleTodo from "./SingleTodo"
+import { BaseApi } from "./BaseUrl"
 
 class TodoList extends React.Component {
 
@@ -17,7 +17,7 @@ class TodoList extends React.Component {
 
 
   componentDidMount() {
-    axios.get("http://localhost:4000/todos").then((res) => {
+    BaseApi.get("todos").then((res) => {
       this.setState({
         user: res.data
       })
@@ -26,18 +26,31 @@ class TodoList extends React.Component {
   }
 
   callback = (callbackData) => {
-
-    axios.delete("http://localhost:4000/todos/" + callbackData).then((res) => {
-      console.log(res.data)
-      this.state.user.splice(callbackData, 1)
+    let indexData = null;
+    let newUser = [...this.state.user]
+    BaseApi.delete("todos/" + callbackData).then((res) => {
+      //console.log(res.data)
     })
-    this.setState(this.state)
+    for (let i = 0; i < this.state.user.length; i++) {
+      if (this.state.user[i].id == callbackData) {
+        indexData = i;
+        console.log(callbackData, indexData)
+        break;
+      }
+    }
+    newUser.splice(indexData, 1)
+    indexData = null
+    //console.log(newUser)
+    this.setState({
+      user: newUser
+    })
+
   }
 
 
   getData() {
-    return this.state.user.map((singleTodo) => {
-      return <SingleTodo key={singleTodo.id} id={singleTodo.id} title={singleTodo.title} handler={this.callback} />
+    return this.state.user.map((singleTodo, i) => {
+      return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} title={singleTodo.title} handler={this.callback} />
     })
   }
   changeData(event) {
@@ -56,8 +69,8 @@ class TodoList extends React.Component {
     }
 
     if (this.state.currentTitle !== "") {
-      axios.post("http://localhost:4000/todos", newstate).then((res) => {
-        console.log(res.data)
+      BaseApi.post("todos", newstate).then((res) => {
+        // console.log(res.data)
         newUser.push(res.data)
         this.setState({
           user: newUser,

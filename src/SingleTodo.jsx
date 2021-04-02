@@ -6,7 +6,7 @@ export default class SingleTodo extends React.Component {
 
     deleteData(deletedItem) {
 
-        //console.log(deletedItem)
+        //console.log(deletedItem, Deleteindex)
         this.props.handler(deletedItem)
 
     }
