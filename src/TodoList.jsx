@@ -8,72 +8,6 @@ function TodoList() {
   const [todoList, setTodoList] = useState([])
   const [currentTitle, setcurrentTitle] = useState("")
 
-  // state = {
-  //   user: [
-
-  //   ],
-  //   currentTitle: "",
-  //   complete: false
-
-  // }
-
-
-
-  // componentDidMount() {
-  //   BaseApi.get("todos").then((res) => {
-  //     this.setState({
-  //       user: res.data
-  //     })
-  //   })
-
-  // }
-
-  // callback = (callbackData) => {
-  //   let indexData = null;
-  //   let newUser = [...this.state.user]
-  //   BaseApi.delete("todos/" + callbackData).then((res) => {
-  //     //console.log(res.data)
-  //   })
-  //   for (let i = 0; i < this.state.user.length; i++) {
-  //     if (this.state.user[i].id == callbackData) {
-  //       indexData = i;
-  //       // console.log(callbackData, indexData)
-  //       break;
-  //     }
-  //   }
-  //   if (indexData != null) {
-  //     newUser.splice(indexData, 1)
-  //     //console.log(newUser)
-  //     this.setState({
-  //       user: newUser
-  //     })
-  //   }
-
-
-  // }
-
-
-  // update(todo, callbackevent) {
-  //   let indexData = null;
-  //   let checked = callbackevent.target.checked;
-  //   let newUser = [...this.state.user]
-  //   console.log(todo.id)
-  //   BaseApi.patch("todos/" + todo.id, { complete: checked }).then((res) => {
-  //   })
-  //   for (let i = 0; i < this.state.user.length; i++) {
-  //     if (this.state.user[i].id == todo.id) {
-  //       indexData = i
-  //       break
-  //     }
-  //   }
-  //   newUser[indexData].complete = checked
-  //   this.setState({
-  //     user: newUser
-  //   })
-
-  // }
-
-
 
 
   useEffect(function () {
@@ -93,9 +27,11 @@ function TodoList() {
         break
       }
     }
-    newTodo.splice(index, 1)
-    setTodoList(newTodo)
-    BaseApi.delete("todos/" + item).then((res) => { })
+
+    BaseApi.delete("todos/" + item).then((res) => {
+      newTodo.splice(index, 1)
+      setTodoList(newTodo)
+    })
   }
 
   function deleteAll() {
@@ -120,13 +56,19 @@ function TodoList() {
     }
 
     newTodo[index].complete = checked
-    setTodoList([...newTodo])
+    setTodoList(newTodo)
+  }
+  const [selectedData, selectfunc] = useState()
+  function singleItem(id) {
+    selectfunc(id)
+    console.log(selectedData)
+    // console.log(id)
   }
 
   function getData() {
     return todoList.map((singleTodo, i) => {
       return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} data={singleTodo}
-        title={singleTodo.title} handler={deleteTodo} onchangeHandler={update} />
+        title={singleTodo.title} handler={deleteTodo} onchangeHandler={update} EditInfo={singleItem} />
     })
   }
   function changeData(event) {
@@ -147,20 +89,6 @@ function TodoList() {
       setcurrentTitle("")
     }
   }
-
-  //   if (this.state.currentTitle !== "") {
-  //     BaseApi.post("todos", newstate).then((res) => {
-  //       console.log(res.data)
-  //       newUser.push(res.data)
-  //       this.setState({
-  //         user: newUser,
-  //         currentTitle: ""
-  //       })
-  //     })
-
-  //   }
-  // }
-
 
   let count;
   if (todoList.length > 0) {

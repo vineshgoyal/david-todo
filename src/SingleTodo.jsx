@@ -15,6 +15,10 @@ export default function SingleTodo(props) {
         // console.log(props.data, event.target.checked)
         props.onchangeHandler(props.data, event.target.checked)
     }
+    function userInfo() {
+        //  console.log(props.id)
+        props.EditInfo(props.id)
+    }
 
 
     let linethrough = ""
@@ -24,7 +28,7 @@ export default function SingleTodo(props) {
 
     return (
         <>
-            <h6
+            <h6 onClick={userInfo}
                 className="list-group-item list-group-item-action list-group-item-secondary bg-secondry text-center">
                 <h6 className={linethrough}>
                     <input type="checkbox" class="form-check-input mt-2"
