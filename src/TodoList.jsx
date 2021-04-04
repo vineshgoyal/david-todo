@@ -9,6 +9,7 @@ function TodoList() {
   const [todoList, setTodoList] = useState([])
   const [currentTitle, setcurrentTitle] = useState("")
   const [selectedData, selectfunc] = useState({})
+  let [value, selectValue] = useState(false)
 
 
 
@@ -48,12 +49,35 @@ function TodoList() {
     setTodoList([])
   }
 
-  function selectAll() {
-    for (let i = 0; i < todoList.length; i++) {
-      BaseApi.patch("todos/" + todoList[i].id, { complete: true }).then((res) => { })
-      todoList[i].complete = true
+  // function btnText() {
+  //   if (value) {
+  //     return "Select All"
+  //   }
+  //   else {
+  //     return "Undo"
+  //   }
+  // }
+  let select = "";
+  let clear = "";
+
+  if (todoList.length > 0) {
+    clear = <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={deleteAll} >Clear All</button>
+    if (value == false) {
+      select = <button class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll}>Select All</button>
+    } else {
+      select = <button type="button" class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll} >Undo</button>
+
     }
-    setTodoList([...todoList])
+  }
+
+  function selectAll() {
+    let temp = [...todoList]
+    for (let i = 0; i < todoList.length; i++) {
+      BaseApi.patch("todos/" + todoList[i].id, { complete: !value }).then((res) => { })
+      temp[i].complete = !value
+    }
+    selectValue(!value)
+    setTodoList(temp)
   }
 
   function update(todo, checked) {
@@ -77,11 +101,8 @@ function TodoList() {
 
   function singleItem(data) {
     selectfunc({ ...data })
-
-    // console.log(id)
   }
 
-  //console.log(selectedData)
   function getData() {
     return todoList.map((singleTodo, i) => {
       return <SingleTodo key={singleTodo.id} index={i} data={singleTodo}
@@ -112,7 +133,6 @@ function TodoList() {
 
   function updatedData(id, singleTodo) {
     let index = null;
-    BaseApi.patch("todos/" + id, { title: singleTodo.title }).then((res) => { })
     for (let i = 0; i < todoList.length; i++) {
       if (todoList[i].id == id) {
         index = i;
@@ -120,13 +140,17 @@ function TodoList() {
       }
 
     }
-
     if (index != null) {
-      todoList[index].title = singleTodo.title
-      setTodoList([...todoList])
+      BaseApi.patch("todos/" + id, { title: singleTodo.title }).then((res) => {
+        todoList[index].title = res.data.title
+        setTodoList([...todoList])
+      })
     }
-
   }
+  function cancel() {
+    selectfunc({})
+  }
+
 
   let count;
   if (todoList.length > 0) {
@@ -149,12 +173,12 @@ function TodoList() {
           </button>
           {count}
           {getData()}
-          <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={deleteAll} >Clear All</button>
-          <button type="button" class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll} >Select All</button>
+          {clear}
+          {select}
         </div>
         <div className="col"></div>
         <div className="col-5 ">
-          <UserDetail selectedTodo={selectedData.id} handler={updatedData} />
+          <UserDetail selectedTodo={selectedData.id} handler={updatedData} handler2={cancel} />
         </div>
       </div>
     </div>
