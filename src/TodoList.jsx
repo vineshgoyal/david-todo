@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from "react"
 import SingleTodo from "./SingleTodo"
+import UserDetail from "./UserDetail"
 import { BaseApi } from "./BaseUrl"
 import "./index.css";
 function TodoList() {
 
   const [todoList, setTodoList] = useState([])
   const [currentTitle, setcurrentTitle] = useState("")
+  const [selectedData, selectfunc] = useState({})
 
 
 
@@ -14,13 +16,13 @@ function TodoList() {
     BaseApi.get("todos").then((res) => {
       setTodoList([...res.data])
     })
-  }, []) // not add if we not use empty array??
+  }, [])
 
   function deleteTodo(item) {
 
     let index = null
     let newTodo = [...todoList]
-    console.log(newTodo)
+    // console.log(item)
     for (let i = 0; i < newTodo.length; i++) {
       if (newTodo[i].id == item) {
         index = i
@@ -28,10 +30,13 @@ function TodoList() {
       }
     }
 
-    BaseApi.delete("todos/" + item).then((res) => {
-      newTodo.splice(index, 1)
-      setTodoList(newTodo)
-    })
+    if (index != null) {
+      BaseApi.delete("todos/" + item).then((res) => {
+        newTodo.splice(index, 1)
+        setTodoList(newTodo)
+      })
+
+    }
   }
 
   function deleteAll() {
@@ -41,6 +46,14 @@ function TodoList() {
     // todoList.splice(0, todoList.length)
     // todoList = []
     setTodoList([])
+  }
+
+  function selectAll() {
+    for (let i = 0; i < todoList.length; i++) {
+      BaseApi.patch("todos/" + todoList[i].id, { complete: true }).then((res) => { })
+      todoList[i].complete = true
+    }
+    setTodoList([...todoList])
   }
 
   function update(todo, checked) {
@@ -55,19 +68,23 @@ function TodoList() {
       }
     }
 
-    newTodo[index].complete = checked
-    setTodoList(newTodo)
+    if (index != null) {
+      newTodo[index].complete = checked
+      setTodoList(newTodo)
+    }
+
   }
-  const [selectedData, selectfunc] = useState()
-  function singleItem(id) {
-    selectfunc(id)
-    console.log(selectedData)
+
+  function singleItem(data) {
+    selectfunc({ ...data })
+
     // console.log(id)
   }
 
+  //console.log(selectedData)
   function getData() {
     return todoList.map((singleTodo, i) => {
-      return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} data={singleTodo}
+      return <SingleTodo key={singleTodo.id} index={i} data={singleTodo}
         title={singleTodo.title} handler={deleteTodo} onchangeHandler={update} EditInfo={singleItem} />
     })
   }
@@ -83,11 +100,32 @@ function TodoList() {
       complete: false
     }
     if (currentTitle !== "") {
-      newTodo.push(singleTodo)
-      setTodoList(newTodo)
-      BaseApi.post("todos", singleTodo).then((res) => { })
-      setcurrentTitle("")
+
+      BaseApi.post("todos", singleTodo).then((res) => {
+        newTodo.push(res.data)
+        setTodoList(newTodo)
+        setcurrentTitle("")
+      })
+
     }
+  }
+
+  function updatedData(id, singleTodo) {
+    let index = null;
+    BaseApi.patch("todos/" + id, { title: singleTodo.title }).then((res) => { })
+    for (let i = 0; i < todoList.length; i++) {
+      if (todoList[i].id == id) {
+        index = i;
+        break
+      }
+
+    }
+
+    if (index != null) {
+      todoList[index].title = singleTodo.title
+      setTodoList([...todoList])
+    }
+
   }
 
   let count;
@@ -98,9 +136,9 @@ function TodoList() {
     <div className="container mt-4" >
       <div className="row">
         <div className="col"></div>
-        <div className="col jumbotron">
+        <div className="col-5 jumbotron">
           <h1>Todo App</h1>
-          <input placeholder="Add your new todo"
+          <input placeholder="Add your new todo" className=""
             value={currentTitle}
             onChange={changeData}
             style={{ width: "250px" }} />
@@ -111,9 +149,13 @@ function TodoList() {
           </button>
           {count}
           {getData()}
-          <button type="button" class="btn btn-sm ml-1 bg-primary" onClick={deleteAll} >Clear All</button>
+          <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={deleteAll} >Clear All</button>
+          <button type="button" class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll} >Select All</button>
         </div>
         <div className="col"></div>
+        <div className="col-5 ">
+          <UserDetail selectedTodo={selectedData.id} handler={updatedData} />
+        </div>
       </div>
     </div>
   )

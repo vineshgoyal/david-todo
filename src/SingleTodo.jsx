@@ -7,7 +7,7 @@ export default function SingleTodo(props) {
     function deleteData() {
 
         // console.log(props.id)
-        props.handler(props.id)
+        props.handler(props.data.id)
 
     }
 
@@ -17,7 +17,7 @@ export default function SingleTodo(props) {
     }
     function userInfo() {
         //  console.log(props.id)
-        props.EditInfo(props.id)
+        props.EditInfo(props.data)
     }
 
 
@@ -28,19 +28,23 @@ export default function SingleTodo(props) {
 
     return (
         <>
-            <h6 onClick={userInfo}
-                className="list-group-item list-group-item-action list-group-item-secondary bg-secondry text-center">
-                <h6 className={linethrough}>
-                    <input type="checkbox" class="form-check-input mt-2"
+            <div
+                className="list-group-item list-group-item-action list-group-item-secondary bg-secondry text-center mb-2">
+                <h5 className={linethrough}>
+                    <input type="checkbox" class="form-check-input mt-2 "
                         onChange={onChangeCheck}
                         checked={props.data.complete}
                     />
                     {props.title}
+                    <button type="button" class="btn btn-sm ml-1 bg-primary " onClick={userInfo}>
+                        Edit
+                    </button>
                     <button type="button" class="btn btn-sm ml-1 " onClick={deleteData}>
                         <img src="delete.png" height="15" width="15" />
-                    </button></h6> <br />
+                    </button>
+                </h5> <br />
 
-            </h6>
+            </div>
         </>
 
     )
