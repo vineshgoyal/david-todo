@@ -5,7 +5,6 @@ import { BaseApi } from "./BaseUrl"
 export default function UserDetail(props) {
 
     const [todoSingle, selectfunc] = useState({})
-    const [detail, cancelfunc] = useState(true)
     useEffect(function () {
 
         if (props.selectedTodo != undefined) {
@@ -44,7 +43,7 @@ export default function UserDetail(props) {
     }
 
     function cancel() {
-        cancelfunc(false)
+        props.handler2()
 
     }
 
@@ -52,22 +51,19 @@ export default function UserDetail(props) {
         return null
     }
 
-    let data = null
 
-    if (detail == true) {
-
-        data = <div className="jumbotron bg-warning">
-            <h2>TodoList Detail is Below:</h2>
-            <input className="form-control" value={todoSingle.title} onChange={changeTitle} /> <br />
-            <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={add} >
-                Submit
+    let data = <div className="jumbotron bg-warning">
+        <h2>TodoList Detail is Below:</h2>
+        <input className="form-control" value={todoSingle.title} onChange={changeTitle} /> <br />
+        <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={add} >
+            Submit
        </button>
-            <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={cancel} >
-                Cancel
+        <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={cancel} >
+            Cancel
         </button>
-        </div>
+    </div>
 
-    }
+
 
 
     return (
