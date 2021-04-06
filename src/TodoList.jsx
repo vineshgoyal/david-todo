@@ -1,8 +1,9 @@
 
 import React from "react"
 import SingleTodo from "./SingleTodo"
+import TodoDetail from "./TodoDetail"
 import { BaseApi } from "./BaseUrl"
-
+import "./index.css";
 class TodoList extends React.Component {
 
   state = {
@@ -10,8 +11,9 @@ class TodoList extends React.Component {
 
     ],
     currentTitle: "",
-    complete: false
-
+    complete: false,
+    selectedId: null,
+    checked: false
   }
 
 
@@ -34,23 +36,104 @@ class TodoList extends React.Component {
     for (let i = 0; i < this.state.user.length; i++) {
       if (this.state.user[i].id == callbackData) {
         indexData = i;
-        console.log(callbackData, indexData)
+        // console.log(callbackData, indexData)
         break;
       }
     }
-    newUser.splice(indexData, 1)
-    indexData = null
-    //console.log(newUser)
+    if (indexData != null) {
+      newUser.splice(indexData, 1)
+      //console.log(newUser)
+      this.setState({
+        user: newUser
+      })
+    }
+  }
+
+  clearAll = () => {
+    for (let i = 0; i < this.state.user.length; i++) {
+      BaseApi.delete("todos/" + this.state.user[i].id)
+    }
+    this.setState({ user: [] })
+  }
+
+  selectAll = () => {
+
+    let newUser = [...this.state.user]
+    for (let i = 0; i < this.state.user.length; i++) {
+      BaseApi.patch("todos/" + this.state.user[i].id, { complete: !this.state.checked }).then((res) => {
+
+      })
+      newUser[i].complete = !this.state.checked
+    }
+    this.setState({
+      user: newUser,
+      checked: true
+    })
+
+  }
+
+  UnselectAll = () => {
+    let newUser = [...this.state.user]
+    for (let i = 0; i < this.state.user.length; i++) {
+      BaseApi.patch("todos/" + this.state.user[i].id, { complete: !this.state.checked }).then((res) => {
+
+      })
+      newUser[i].complete = !this.state.checked
+    }
+    this.setState({
+      user: newUser,
+      checked: false
+    })
+  }
+
+
+  update(todo, callbackevent) {
+    let indexData = null;
+    let checked = callbackevent.target.checked;
+    let newUser = [...this.state.user]
+    console.log(todo.id)
+    BaseApi.patch("todos/" + todo.id, { complete: checked }).then((res) => {
+    })
+    for (let i = 0; i < this.state.user.length; i++) {
+      if (this.state.user[i].id == todo.id) {
+        indexData = i
+        break
+      }
+    }
+    newUser[indexData].complete = checked
     this.setState({
       user: newUser
     })
 
   }
 
+  editData = (id) => {
+    //console.log(id)
+    this.setState({
+      selectedId: id
+    })
+  }
+
+  updateSingleTodo(id, singleTodo) {
+    let newState = [...this.state.user]
+    let index = null;
+    for (let i = 0; i < this.state.user.length; i++) {
+      if (this.state.user[i].id == id) {
+        index = i
+        break;
+      }
+    }
+    BaseApi.patch("todos/" + id, { title: singleTodo.title }).then((res) => { })
+    newState[index].title = singleTodo.title
+    this.setState(newState)
+  }
+
 
   getData() {
     return this.state.user.map((singleTodo, i) => {
-      return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} title={singleTodo.title} handler={this.callback} />
+      return <SingleTodo key={singleTodo.id} index={i} id={singleTodo.id} data={singleTodo}
+        title={singleTodo.title} handler={this.callback} handler2={this.editData}
+        onchangeHandler={this.update.bind(this)} />
     })
   }
   changeData(event) {
@@ -81,27 +164,49 @@ class TodoList extends React.Component {
     }
   }
 
+  cancelUpdate = () => {
+    this.setState({ selectedId: null })
+  }
+
   render() {
     let count;
     if (this.state.user.length > 0) {
       count = <p>You have {this.state.user.length} pending value</p>
     }
+    let select = ""
+    let clear = ""
+    if (this.state.user.length > 0) {
+      clear = <button type="button" className="btn btn-sm ml-1 bg-warning" onClick={this.clearAll} >Clear All</button>
+      if (this.state.checked) {
+        select = <button type="button" className="btn btn-sm ml-1 bg-primary text-white"
+          onClick={this.UnselectAll} >Unselect All</button>
+      }
+      else {
+        select = <button type="button" className="btn btn-sm ml-1 bg-primary text-white"
+          onClick={this.selectAll} >Select All</button>
+      }
+    }
     return (
       <div className="container mt-4">
         <div className="row">
-          <div className="col"></div>
-          <div className="col jumbotron">
+          <div className="col-2"></div>
+          <div className="col-5 jumbotron">
+
             <h1>Todo App</h1>
             <input placeholder="Add your new todo"
               value={this.state.currentTitle}
               onChange={this.changeData.bind(this)} style={{ width: "250px" }} />
-            <button type="button" class="btn btn-sm ml-3" onClick={this.onSubmit}>
+            <button type="button" className="btn btn-sm ml-3" onClick={this.onSubmit}>
               <img src="plus.jpg" height="40" width="40" />
             </button>
             {count}
             {this.getData()}
+            {clear}
+            {select}
           </div>
-          <div className="col"></div>
+          <div className="col-5">
+            <TodoDetail singleData={this.state.selectedId} handler={this.updateSingleTodo.bind(this)} handler2={this.cancelUpdate} />
+          </div>
         </div>
       </div>
     )
