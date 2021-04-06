@@ -191,6 +191,7 @@ class TodoList extends React.Component {
         <div className="row">
           <div className="col-2"></div>
           <div className="col-5 jumbotron">
+
             <h1>Todo App</h1>
             <input placeholder="Add your new todo"
               value={this.state.currentTitle}
