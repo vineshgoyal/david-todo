@@ -11,6 +11,10 @@ export default class SingleTodo extends React.Component {
 
     }
 
+    editInfo() {
+        this.props.handler2(this.props.data.id)
+    }
+
     onChangeCheck(select, event) {
         // console.log(select, id, event.target.checked)
         this.props.onchangeHandler(select, event)
@@ -25,19 +29,25 @@ export default class SingleTodo extends React.Component {
 
         return (
             <>
-                <h6
+                <div
                     className="list-group-item list-group-item-action list-group-item-secondary bg-secondry text-center">
-                    <h6 className={linethrough}> <input type="checkbox" class="form-check-input mt-2"
+                    <h6 className={linethrough}> <input type="checkbox" className="form-check-input mt-2"
                         onChange={this.onChangeCheck.bind(this, this.props.data)}
                         checked={this.props.data.complete} />
                         {this.props.title}
-                        <button type="button" class="btn btn-sm ml-1 " onClick={
+                        <button type="button" className="btn btn-sm ml-1 bg-primary text-white" onClick={
+                            this.editInfo.bind(this)
+                        }>
+                            Edit
+                        </button>
+                        <button type="button" className="btn btn-sm ml-1 pull-right " onClick={
                             this.deleteData.bind(this, this.props.id)
                         }>
                             <img src="delete.png" height="15" width="15" />
-                        </button></h6> <br />
-
-                </h6>
+                        </button>
+                    </h6>
+                </div>
+                <br />
             </>
 
         )
