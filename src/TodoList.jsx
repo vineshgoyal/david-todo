@@ -9,12 +9,27 @@ function TodoList() {
   const [todoList, setTodoList] = useState([])
   const [currentTitle, setcurrentTitle] = useState("")
   const [selectedData, selectfunc] = useState({})
+  const [checked, selectcheck] = useState(false)
 
 
 
   useEffect(function () {
     BaseApi.get("todos").then((res) => {
-      setTodoList([...res.data])
+      //console.log(res.data)
+      let newTodo = res.data.filter(function (singleTodo) {
+        if (singleTodo.complete == true) {
+          return true
+        }
+      })
+      if (newTodo.length >= 1) {
+        setTodoList([...res.data])
+        selectcheck(!checked)
+      }
+      else {
+        setTodoList([...res.data])
+        selectcheck(checked)
+      }
+
     })
   }, [])
 
@@ -50,17 +65,22 @@ function TodoList() {
 
   function selectAll() {
     for (let i = 0; i < todoList.length; i++) {
-      BaseApi.patch("todos/" + todoList[i].id, { complete: true }).then((res) => { })
-      todoList[i].complete = true
+      BaseApi.patch("todos/" + todoList[i].id, { complete: !checked }).then((res) => { })
+      todoList[i].complete = !checked
     }
+
     setTodoList([...todoList])
+    selectcheck(!checked)
+    // console.log("select all")
   }
+
+
 
   function update(todo, checked) {
     // console.log(checked)
     let index = null
     let newTodo = [...todoList]
-    BaseApi.patch("todos/" + todo.id, { complete: checked }).then((res) => { })
+
     for (let i = 0; i < newTodo.length; i++) {
       if (newTodo[i].id == todo.id) {
         index = i
@@ -68,10 +88,39 @@ function TodoList() {
       }
     }
 
-    if (index != null) {
-      newTodo[index].complete = checked
-      setTodoList(newTodo)
-    }
+    BaseApi.patch("todos/" + todo.id, { complete: checked }).then((res) => {
+      //console.log(res.data)
+      if (index != null) {
+        newTodo[index].complete = checked
+        setTodoList(newTodo)
+        selectcheck(checked)
+      }
+
+    })
+
+    // let FilterData = newTodo.filter(function (singleUser) {
+    //   if (singleUser.complete == true) {
+    //     return true
+    //   }
+    // })
+
+    // if (FilterData.length >= 1) {
+    //   if (index != null) {
+    //     newTodo[index].complete = !checked
+    //     setTodoList(newTodo)
+    //     selectcheck(!checked)
+    //   }
+    // }
+    // else {
+
+    //   if (index != null) {
+    //     newTodo[index].complete = checked
+    //     setTodoList(newTodo)
+    //     selectcheck(checked)
+    //   }
+
+    // }
+
 
   }
 
@@ -124,8 +173,17 @@ function TodoList() {
     if (index != null) {
       todoList[index].title = singleTodo.title
       setTodoList([...todoList])
+      selectfunc({})
     }
 
+  }
+
+  let select = ""
+  if (!checked) {
+    select = <button type="button" class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll} >Select All</button>
+  }
+  else {
+    select = <button type="button" class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll} > Unselect All</ button>
   }
 
   let count;
@@ -150,7 +208,7 @@ function TodoList() {
           {count}
           {getData()}
           <button type="button" class="btn btn-sm ml-1 bg-primary mt-2" onClick={deleteAll} >Clear All</button>
-          <button type="button" class="btn btn-sm ml-1 bg-warning mt-2" onClick={selectAll} >Select All</button>
+          {select}
         </div>
         <div className="col"></div>
         <div className="col-5 ">

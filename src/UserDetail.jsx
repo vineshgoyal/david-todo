@@ -28,7 +28,7 @@ export default function UserDetail(props) {
             title: todoSingle.title,
             complete: false
         }
-
+        selectfunc({ ...todoSingle, title: "" })
         // BaseApi.patch("todos/" + props.selectedTodo, { title: todoSingle.title }).then((res) => { })
 
         // console.log(props.selectedTodo, singleTodo)
@@ -37,9 +37,9 @@ export default function UserDetail(props) {
     }
 
     function changeTitle(event) {
-        todoSingle.title = event.target.value
+        //todoSingle.title = event.target.value
         //  console.log(todoSingle.title)
-        selectfunc({ ...todoSingle })
+        selectfunc({ ...todoSingle, title: event.target.value })
 
     }
 

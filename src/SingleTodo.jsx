@@ -42,7 +42,7 @@ export default function SingleTodo(props) {
                     <button type="button" class="btn btn-sm ml-1 " onClick={deleteData}>
                         <img src="delete.png" height="15" width="15" />
                     </button>
-                </h5> <br />
+                </h5>
 
             </div>
         </>
