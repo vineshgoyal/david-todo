@@ -13,7 +13,8 @@ class TodoList extends React.Component {
     currentTitle: "",
     complete: false,
     selectedId: null,
-    checked: false
+    checked: false,
+    error: null
   }
 
 
@@ -190,6 +191,13 @@ class TodoList extends React.Component {
       complete: false                //title in newstate we use title.property name should be same
     }
 
+    if (this.state.currentTitle == "") {
+      this.setState({
+        error: "Please fill empty field"
+      })
+      return
+    }
+
     if (this.state.currentTitle !== "") {
       BaseApi.post("todos", newstate).then((res) => {
         // console.log(res.data)
@@ -197,7 +205,7 @@ class TodoList extends React.Component {
         this.setState({
           user: newUser,
           currentTitle: "",
-
+          error: null
         })
       })
 
@@ -209,6 +217,7 @@ class TodoList extends React.Component {
   }
 
   render() {
+
     let count;
     if (this.state.user.length > 0) {
       count = <p>You have {this.state.user.length} pending value</p>
@@ -238,7 +247,8 @@ class TodoList extends React.Component {
               onChange={this.changeData.bind(this)} style={{ width: "250px" }} />
             <button type="button" className="btn btn-sm ml-3" onClick={this.onSubmit}>
               <img src="plus.jpg" alt="submit icon" height="40" width="40" />
-            </button>
+            </button><br />
+            {this.state.error}
             {count}
             {this.getData()}
             {clear}
