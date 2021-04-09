@@ -1,4 +1,3 @@
-import axios from "axios"
 import React from "react"
 
 export default class SingleTodo extends React.Component {
@@ -34,16 +33,16 @@ export default class SingleTodo extends React.Component {
                     <h6 className={linethrough}> <input type="checkbox" className="form-check-input mt-2"
                         onChange={this.onChangeCheck.bind(this, this.props.data)}
                         checked={this.props.data.complete} />
-                        {this.props.title}
-                        <button type="button" className="btn btn-sm ml-1 bg-primary text-white" onClick={
+                        <span> {this.props.title}</span>
+                        <button type="button" className="btn btn-sm ml-1  text-white" onClick={
                             this.editInfo.bind(this)
                         }>
-                            Edit
+                            <img src="edit.png" alt="delete img" height="15" width="15" />
                         </button>
                         <button type="button" className="btn btn-sm ml-1 pull-right " onClick={
                             this.deleteData.bind(this, this.props.id)
                         }>
-                            <img src="delete.png" height="15" width="15" />
+                            <img src="delete.png" alt="delete img" height="15" width="15" />
                         </button>
                     </h6>
                 </div>

@@ -1,3 +1,8 @@
 .complete-item{
   text-decoration: line-through;
 }
+
+.float-left{
+  float: left;
+}
+

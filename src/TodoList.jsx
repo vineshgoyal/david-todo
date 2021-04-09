@@ -17,12 +17,49 @@ class TodoList extends React.Component {
   }
 
 
+  // finder() {
+
+  //   var newuser = user.filter(function (singleuser) {
+  //     if (singleuser.completed == true) {
+  //       return true
+  //     }
+  //   })
+
+  //   if (newuser.length >= 1) {
+
+  //     console.log(" some user has true value ")
+  //   }
+  //   else {
+  //     console.log(" all value are false ")
+  //   }
+
+  // }
+
+
 
   componentDidMount() {
     BaseApi.get("todos").then((res) => {
-      this.setState({
-        user: res.data
+      // console.log(res.data.complete)
+      let newTodo = res.data.filter((singleuser) => {
+        // console.log(singleuser)
+        if (singleuser.complete === true) {
+          return true
+        }
       })
+
+      if (newTodo.length >= 1) {
+        this.setState({
+          user: res.data,
+          checked: true
+        })
+      }
+      else {
+        this.setState({
+          user: res.data,
+          checked: false
+        })
+      }
+
     })
 
   }
@@ -34,7 +71,7 @@ class TodoList extends React.Component {
       //console.log(res.data)
     })
     for (let i = 0; i < this.state.user.length; i++) {
-      if (this.state.user[i].id == callbackData) {
+      if (this.state.user[i].id === callbackData) {
         indexData = i;
         // console.log(callbackData, indexData)
         break;
@@ -95,7 +132,7 @@ class TodoList extends React.Component {
     BaseApi.patch("todos/" + todo.id, { complete: checked }).then((res) => {
     })
     for (let i = 0; i < this.state.user.length; i++) {
-      if (this.state.user[i].id == todo.id) {
+      if (this.state.user[i].id === todo.id) {
         indexData = i
         break
       }
@@ -118,14 +155,16 @@ class TodoList extends React.Component {
     let newState = [...this.state.user]
     let index = null;
     for (let i = 0; i < this.state.user.length; i++) {
-      if (this.state.user[i].id == id) {
+      if (this.state.user[i].id === id) {
         index = i
         break;
       }
     }
-    BaseApi.patch("todos/" + id, { title: singleTodo.title }).then((res) => { })
-    newState[index].title = singleTodo.title
-    this.setState(newState)
+    if (index != null) {
+      BaseApi.patch("todos/" + id, { title: singleTodo.title }).then((res) => { })
+      newState[index].title = singleTodo.title
+      this.setState({ newState, selectedId: null })
+    }
   }
 
 
@@ -157,7 +196,8 @@ class TodoList extends React.Component {
         newUser.push(res.data)
         this.setState({
           user: newUser,
-          currentTitle: ""
+          currentTitle: "",
+
         })
       })
 
@@ -190,14 +230,14 @@ class TodoList extends React.Component {
       <div className="container mt-4">
         <div className="row">
           <div className="col-2"></div>
-          <div className="col-5 jumbotron">
+          <div className="col-5 jumbotron ">
 
             <h1>Todo App</h1>
-            <input placeholder="Add your new todo"
+            <input placeholder="Add your new todo" className="form-control"
               value={this.state.currentTitle}
               onChange={this.changeData.bind(this)} style={{ width: "250px" }} />
             <button type="button" className="btn btn-sm ml-3" onClick={this.onSubmit}>
-              <img src="plus.jpg" height="40" width="40" />
+              <img src="plus.jpg" alt="submit icon" height="40" width="40" />
             </button>
             {count}
             {this.getData()}
